@@ -1,0 +1,86 @@
+April 18, 2014:
+	version 1.0 beta:
+		* GC normalization is now less strict
+		* Duplication windows are calculated through LW and SW. CW info for further filtering to be added.
+
+September 4, 2013:
+	version 0.51 released:
+		* No new updates, only the bugfix below.
+
+July 15, 2013:
+		* Minor bug in CW counting is fixed.
+
+July 2, 2013:
+	version 0.5:
+		* SAM files can now separately be read into *.depth files, and then merged. 
+		* -nsam parameter to read specific SAM files in the READ mode.
+		* New CONC mode (--conc) to concatenate/merge different *.depth files using the new -concdepth parameter. These different files may be from different library preparations (see below).
+		* Multiple library support added.
+		* Several bug fixes.
+
+November 26, 2012:
+	version 0.41:
+		 * Bugs in non-autosomal chromosome processing for male samples are fixed.
+
+September 23, 2012:
+	version 0.4:
+		 * Pseudoautosomal support added through -pseudoa paramater. You can enter the pseudoautosomal regions in BED format in the PREP mode. This is optional; but the configuration file generated and used by this version is not compatible with the previous versions. You need to recreate the configuration file using the PREP mode.
+		 * Code cleanup to facilitate easier addition of new features.
+
+June 1, 2012
+	version 0.35:
+		 * SAM headers are now ignored.
+
+December 7, 2011
+	version 0.34:
+		 * Segmentation fault with some kernels & gcc due to an unallocated string is fixed.
+
+October 13, 2011
+	version 0.33:
+		 * Compilation errors in MacOSX are fixed.
+    		 * Compilation error in x86_64 systems with gcc version > 4.33 is fixed.
+
+July 22, 2011
+	version 0.32:
+		* Bug in parsing chromosome names that end with whitespace is fixed.
+
+June 22, 2011
+	version 0.31:
+		* Bug causing infinite loop in control region selection is fixed.
+
+April 16, 2011
+	version 0.3:
+		* Bug in GC normalization fixed
+		* Bug in CN estimation in chrX and chrY for male mammals is fixed.
+
+March 3, 2011
+	GC counting bug in LW when an assembly gap is 1 character is fixed. (version 0.22)
+
+March 2, 2011
+	Bug causing segmentation fault when CW_SIZE is set to a small value is fixed.  (version 0.21)
+
+February 25, 2011
+	A bug in GC normalization is fixed. (version 0.2)
+
+January 23, 2011
+	SW normalization implemented  (copy paste from LW ;-) )
+
+December 27, 2010
+	LW normalization implemented
+
+December 21, 2010
+	a bug in handling file names is fixed
+
+December 14, 2010
+	fixes to control selection: normalization is done AFTER controls are selected
+	Multiplicative GC scaling option (--multgc)
+
+November 18, 2010
+	added removing low coverage windows from controls
+
+November 14, 2010
+	version 0.1-rc
+	added iteration until min >= mean - 3std ; and 2std for chrX
+
+November 11, 2010
+	version 0.1-alpha

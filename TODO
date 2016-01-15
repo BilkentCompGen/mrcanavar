@@ -1,0 +1,2 @@
+* Coverage stats; number of reads, number of bp; divide by genome length - gaps 
+* CNV intervals for duplications and deletions.
