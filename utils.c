@@ -356,6 +356,8 @@ int endswith(char *src, char *end){
 
 void trimspace(char *str){
   int len;
+  char *cutstr;
+
   len = strlen(str) - 1;
   while(1){
     if (isspace(str[len]))
@@ -363,6 +365,10 @@ void trimspace(char *str){
     else
       break;
   }
+  
+  cutstr = strchr(str, ' ');
+  if (cutstr != NULL) 
+    *cutstr = 0;
 }
 
 int isPseudo(struct window win, int chrom_id){
