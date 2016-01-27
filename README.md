@@ -28,11 +28,14 @@ mrCaNaVaR operates on three classses of sliding windows over the reference genom
 
 * *Long Windows (LW)* are used to find locations of deletions and duplications. The LWs are overlapping. By default the window size size is 5000 bp of non-masked characters (i.e. A, C, G, T only), and the slide size is 1000 bp of any characters. For example, in repeat masked NCBI Build 35, the first two LWs are:                   
 
-                  chr1    0    6792
-                  chr1    1000    6792
-                  chr1    2000    7203
+          chr1    0       6792
+          chr1    1000    6792
+          chr1    2000    7203
 
-                  Here, the first window has 6792 any characters, but 5000 non-N characters (thus 1792 N characters). We then slide the window by 1000 "any" base pairs, starting the second window at position 1000.  The end of the second window is again 6792 since all of the first 1000 characters of chr1 is masked. The third window starts at position 2000 and contains 5203 any characters, where 5000 are non-N.
+          Here, the first window has 6792 any characters, but 5000 non-N characters (thus 1792 N characters). 
+          We then slide the window by 1000 "any" base pairs, starting the second window at position 1000.  
+          The end of the second window is again 6792 since all of the first 1000 characters of chr1 is masked. 
+          The third window starts at position 2000 and contains 5203 any characters, where 5000 are non-N.
 
 * *Short Windows (SW)* are used to refine breakpoints of detected duplication and deletion intervals. Default window size is 1000 bp of non-masked characters, and the slide size is 1000 bp of any characters, similar to LW.
 
@@ -167,8 +170,6 @@ mrCaNaVaR operates on three classses of sliding windows over the reference genom
 		--xy : Set gender of the sequenced sample as male. Mammalian genomes only. 
 					Default is autodetect.
 		--verbose : Verbose output.
-
-
 
 		NOT YET IMPLEMENTED:
 		-cont_win <cwin_number> : Contiguous window number to look for high/low depth windows. 
