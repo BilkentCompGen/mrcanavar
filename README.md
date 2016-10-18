@@ -169,9 +169,7 @@ mrCaNaVaR operates on three classses of sliding windows over the reference genom
 					Default is autodetect.
 		--xy : Set gender of the sequenced sample as male. Mammalian genomes only. 
 					Default is autodetect.
-		--verbose : Verbose output.
-
-		NOT YET IMPLEMENTED:
 		-cont_win <cwin_number> : Contiguous window number to look for high/low depth windows. 
 					  Default is 7.
 		-cut_win  <cwin_cutoff> : Window number cutoff. Default is 6.
+		--verbose : Verbose output.
