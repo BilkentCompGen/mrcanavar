@@ -231,16 +231,9 @@ void printHelp(char *binfile){
   fprintf (stdout, "\t--multgc                : Perform multiplicative GC correction. Default is additive.\n");
   fprintf (stdout, "\t-mindup <min_dup_len>   : Minimum duplication length. Default is 10000.\n");
   fprintf (stdout, "\t-gene <genelist>        : Coordinates for genes for calculating gene-based copy numbers.\n");
+  fprintf (stdout, "\t-cont_win <cwin_number> : Contiguous window number to look for high/low depth windows. Default is 7.\n");
+  fprintf (stdout, "\t-cut_win  <cwin_cutoff> : Window number cutoff. Default is 6.\n\n");
   fprintf (stdout, "\t--verbose               : Verbose output.\n\n");
 
-
-  /*
-
-    fprintf (stdout, "========       NOT IMPLEMENTED YET       ========\n\n");
-    fprintf (stdout, "\t-cont_win <cwin_number> : Contiguous window number to look for high/low depth windows. Default is 7.\n");
-    fprintf (stdout, "\t-cut_win  <cwin_cutoff> : Window number cutoff. Default is 6.\n\n");
-
-
-  */
 
 }
