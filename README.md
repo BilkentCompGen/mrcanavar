@@ -169,6 +169,9 @@ mrCaNaVaR operates on three classses of sliding windows over the reference genom
 					Default is autodetect.
 		--xy : Set gender of the sequenced sample as male. Mammalian genomes only. 
 					Default is autodetect.
+		--multgc : Perform multiplicative GC correction. Default is additive.
+		-mindup <min_dup_len>   : Minimum duplication length. Default is 10000.
+		-gene <genelist>        : Coordinates for genes for calculating gene-based copy numbers.
 		-cont_win <cwin_number> : Contiguous window number to look for high/low depth windows. 
 					  Default is 7.
 		-cut_win  <cwin_cutoff> : Window number cutoff. Default is 6.
