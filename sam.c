@@ -647,11 +647,19 @@ void saveDepth(char *depthFile, int is_norm){
   char *fname;
   FILE *txtDepth;
   FILE *binDepth;
+  char *newdepthfile;
 
-	
+				 
   if (is_norm){
     fname = (char *) getMem (sizeof(char) * (strlen(depthFile) + 20));
-    binDepth = my_fopen(depthFile, "w", 0);
+    if (!endswith(depthFile, ".depth")){
+      newdepthfile = (char *) getMem(sizeof(char *) * (strlen(depthFile)+7));
+      sprintf(newdepthfile, "%s.depth", depthFile);
+      binDepth = my_fopen(newdepthfile, "w", 0);
+      free(newdepthfile);	
+    }
+    else
+      binDepth = my_fopen(depthFile, "w", 0);
     /* start with the magicNum, I will use this as a format check when loading */
     retVal = fwrite(&magicNumDepth, sizeof(magicNumDepth), 1, binDepth);
     for (i = 0; i < num_chrom; i++){
