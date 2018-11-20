@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS = -c -O2 -g -Wall
+CFLAGS = -c -O3 -g -Wall
 LDFLAGS = -lz -lm
 SOURCES = mrcanavar.c utils.c prep.c sam.c callcnv.c gcnorm.c
 OBJECTS = $(SOURCES:.c=.o)

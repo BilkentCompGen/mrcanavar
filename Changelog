@@ -1,3 +1,7 @@
+November 20, 2018:
+	version 1.0:
+		* SAM(.gz) files in READ mode can now be passed as comma-separated list.
+
 April 18, 2014:
 	version 1.0 beta:
 		* GC normalization is now less strict

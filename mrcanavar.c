@@ -13,6 +13,7 @@ int main(int argc, char **argv){
   char gzSAM;
 
   char *indirSAM;
+  char *inSAMlist;
   char *depthFile;
   char *out_prefix;
   char *gene;
@@ -22,6 +23,7 @@ int main(int argc, char **argv){
 
   gzSAM      = 0;
   indirSAM   = NULL;
+  inSAMlist  = NULL;
   depthFile  = NULL;
   out_prefix = NULL;
   gene=NULL;
@@ -106,6 +108,9 @@ int main(int argc, char **argv){
     else if (!strcmp(argv[i], "-samdir"))
       set_str(&indirSAM, argv[i+1]);
   
+    else if (!strcmp(argv[i], "-samlist"))
+      set_str(&inSAMlist, argv[i+1]);
+  
   
     /* optional parameters for the SAM mode */
     else if (!strcmp(argv[i], "--gz"))
@@ -162,7 +167,20 @@ int main(int argc, char **argv){
     break;
   case READSAM:
     fprintf(stdout, "Mode: Read SAM ...\n");
-    read_mapfiles(indirSAM, depthFile, gzSAM);
+
+    if (indirSAM == NULL && inSAMlist == NULL){
+      print_error("Use either -samdir or -samlist parameter to pass the input SAM files.\n");
+    }
+    
+    else if (indirSAM != NULL && inSAMlist != NULL){
+      print_error("Use either -samdir or -samlist parameter to pass the input SAM files. Not both!\n");
+    }
+    
+  
+    if (indirSAM != NULL)
+      read_mapfiles(indirSAM, depthFile, gzSAM, SAMDIR);
+    else
+      read_mapfiles(inSAMlist, depthFile, gzSAM, SAMLIST);
     break;
   case CALL:
     fprintf(stdout, "Mode: Call copy numbers ...\n");

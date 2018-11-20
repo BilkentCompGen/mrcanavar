@@ -6,8 +6,8 @@
 #define MAX_STR 256
 #define GC_BIN  1000
 
-#define VERSION "1.0-beta"
-#define LAST_UPDATE "January 16, 2016\nHer yer Taksim, her yer direniş"
+#define VERSION "1.0"
+#define LAST_UPDATE "November 20, 2018"
 
 
 enum MODETYPE {NONE, PREP, READSAM, CALL, CONC};

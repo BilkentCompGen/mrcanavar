@@ -12,8 +12,11 @@
 #include "gcnorm.h"
 #include "callcnv.h"
 
-void read_mapfiles(char *, char *, char);
-void readSAM(char *, char *, char, long *, long *, long *);
+#define SAMDIR 0
+#define SAMLIST 1
+
+void read_mapfiles(char *, char *, char, int);
+void readSAM(char *, int, char *, char, long *, long *, long *);
 
 int insert_read_lw(char *, int, char *, int, long *);
 int insert_read_sw(char *, int, char *, int, long *);

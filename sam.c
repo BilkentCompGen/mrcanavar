@@ -1,6 +1,7 @@
 #include "sam.h"
 
-void read_mapfiles(char *indirSAM, char *depthFile, char gzSAM){
+
+void read_mapfiles(char *sams, char *depthFile, char gzSAM, int dir_or_list){
 
   DIR *dp;
 
@@ -21,8 +22,10 @@ void read_mapfiles(char *indirSAM, char *depthFile, char gzSAM){
   int lw_cnt;
   int sw_cnt;
   int cw_cnt;
-
-
+  char *token;
+  char *safe_sams = NULL;
+  char **filenames;
+  
   lw_total = 0.0;
   sw_total = 0.0;
   cw_total = 0.0;
@@ -37,85 +40,149 @@ void read_mapfiles(char *indirSAM, char *depthFile, char gzSAM){
 
   if (GENOME_CONF == NULL)
     print_error("Select genome configuration file (input) through the -conf parameter.\n");
-  if (indirSAM == NULL)
+  if (sams == NULL)
     print_error("Select input directory that contains the SAM files through the -samdir parameter.\n");
   if (depthFile == NULL)
     print_error("Select read depth output file through the -depth parameter.\n");
 
 
   loadRefConfig(GENOME_CONF);
-
-  fprintf(stdout, "Scanning the SAM directory: %s\n", indirSAM);
-
-  dp = opendir(indirSAM);
-
-  if (dp == NULL)
-    print_error("SAM directory not found.\n");
-
+  set_str(&safe_sams, sams);
+  
   fileCnt = 0;
   totalFile = 0;
   n_iter = 0;
   cntr = 0;
-  
-  while((ep=readdir(dp))){
-    if (ep->d_name[0] == '.')
-      continue;
-    if (ep->d_type == DT_DIR)
-      continue;
 
-    if (CHECKSAM && !endswith(ep->d_name, ".sam") && !endswith(ep->d_name, ".sam.gz"))
-      continue;
-
-    /*
-      if (!strstr(ep->d_name, "sam"))
-      continue;
-    */
-
-    i = strlen(ep->d_name)-1;
-
-    if ((ep->d_name[i] == 'z' && ep->d_name[i-1] == 'g' && ep->d_name[i-2] == '.') && gzSAM == 0){
-      print_error("File name ends with .gz yet --gz option is not selected. Are you sure?\nIf the files are indeed uncompressed, rename the files.\n");
+  if (dir_or_list == SAMDIR){
+    fprintf(stdout, "Scanning the SAM directory: %s\n", sams);
+    
+    dp = opendir(sams);
+    
+    
+    if (dp == NULL)
+      print_error("SAM directory not found.\n");
+   
+    
+    while((ep=readdir(dp))){
+      if (ep->d_name[0] == '.')
+	continue;
+      if (ep->d_type == DT_DIR)
+	continue;
+      
+      if (CHECKSAM && !endswith(ep->d_name, ".sam") && !endswith(ep->d_name, ".sam.gz"))
+	continue;
+      
+      /*
+	if (!strstr(ep->d_name, "sam"))
+	continue;
+      */
+      
+      i = strlen(ep->d_name)-1;
+      
+      if ((ep->d_name[i] == 'z' && ep->d_name[i-1] == 'g' && ep->d_name[i-2] == '.') && gzSAM == 0){
+	print_error("File name ends with .gz yet --gz option is not selected. Are you sure?\nIf the files are indeed uncompressed, rename the files.\n");
+      }
+      totalFile++;
     }
-    totalFile++;
+    
+    rewinddir(dp);
   }
+
+  else {
+    token = strtok(safe_sams, ",");
+    while (token != NULL){
+      if (endswith(token, ".gz") && gzSAM == 0)
+	print_error("File name ends with .gz yet --gz option is not selected. Are you sure?\nIf the files are indeed uncompressed, rename the files.\n");
+      totalFile++;
+      token = strtok (NULL, ",");
+    }
+    filenames = (char **) getMem(sizeof(char *) * totalFile);
+    memset(filenames, 0, sizeof(char *) * totalFile);
+    i = 0;
+    free(safe_sams);
+    safe_sams = NULL;
+    set_str(&safe_sams, sams);
+
+    token = strtok(safe_sams, ",");
+    while (token != NULL){
+      if (endswith(token, ".gz") && gzSAM == 0)
+	print_error("File name ends with .gz yet --gz option is not selected. Are you sure?\nIf the files are indeed uncompressed, rename the files.\n");
+      set_str(&(filenames[i++]), token);
+      token = strtok (NULL, ",");
+    }
+  }
+
+  
+  
   n_iter = totalFile; // Defult case for SAM's in samdir
 
-  rewinddir(dp);
-  
   if(n_sam_e != 0 && n_sam_e <= totalFile )
     n_iter = (n_sam_e-n_sam_b) + 1;
- 
-  while((ep=readdir(dp)) && n_iter > 0){
 
-    if (ep->d_name[0] == '.')
-      continue;
-    if (ep->d_type == DT_DIR)
-      continue;
-
-    if (CHECKSAM && !endswith(ep->d_name, ".sam") && !endswith(ep->d_name, ".sam.gz"))
-      continue;
-	
-    if ((n_sam_b-1) > cntr){
-      ++cntr;
-      continue;
+  if (dir_or_list == SAMDIR){
+    while((ep=readdir(dp)) && n_iter > 0){
+      
+      if (ep->d_name[0] == '.')
+	continue;
+      if (ep->d_type == DT_DIR)
+	continue;
+      
+      if (CHECKSAM && !endswith(ep->d_name, ".sam") && !endswith(ep->d_name, ".sam.gz"))
+	continue;
+      
+      if ((n_sam_b-1) > cntr){
+	++cntr;
+	continue;
+      }
+      
+      
+      fprintf(stdout, "\r                                                      \rLoading file %d of total %d: %s...", (fileCnt+1), totalFile, ep->d_name);
+      fflush(stdout);
+      
+      readSAM(sams, dir_or_list, ep->d_name, gzSAM, &cw_total, &sw_total, &lw_total);
+      
+      if (VERBOSE) fprintf(stderr, "\nREADSAM: %ld\t%ld\t%ld\n", lw_total, sw_total, cw_total);
+      
+      fileCnt++;
+      n_iter--;
+    }
+    
+    closedir(dp);
+  }
+  
+  else {        
+    // process list
+    /*
+    token = strtok(safe_sams, ",");
+    while (token != NULL){
+      fprintf(stdout, "\r                                                      \rLoading file %d of total %d: %s...", (fileCnt+1), totalFile, token);
+      fflush(stdout);
+      if (CHECKSAM && !endswith(token, ".sam") && !endswith(token, ".sam.gz"))
+	continue;
+      readSAM(sams, dir_or_list, token, gzSAM, &cw_total, &sw_total, &lw_total);
+      token = strtok (NULL, ",");
+      fileCnt++;
+      }*/
+    for (i=0; i<totalFile; i++){
+      fprintf(stdout, "\r                                                      \rLoading file %d of total %d: %s...", (fileCnt+1), totalFile, filenames[i]);
+      fflush(stdout);
+      if (CHECKSAM && !endswith(filenames[i], ".sam") && !endswith(filenames[i], ".sam.gz"))
+	continue;
+      readSAM(sams, dir_or_list, filenames[i], gzSAM, &cw_total, &sw_total, &lw_total);
+      fileCnt++;
     }
 
-
-    fprintf(stdout, "\r                                                      \rLoading file %d of total %d: %s...", (fileCnt+1), totalFile, ep->d_name);
-    fflush(stdout);
-
-    readSAM(indirSAM, ep->d_name, gzSAM, &cw_total, &sw_total, &lw_total);
-
-    if (VERBOSE) fprintf(stderr, "\nREADSAM: %ld\t%ld\t%ld\n", lw_total, sw_total, cw_total);
-
-    fileCnt++;
-    n_iter--;
+    for (i=0; i<totalFile; i++)
+      free(filenames[i]);
+    free(filenames);
+    
   }
 
-  closedir(dp);
-
+  free(safe_sams);
+  
   if (fileCnt == 0)
-    print_error("SAM directory does not contain any files with extensions \".sam\" or \".sam.gz\".\nIf you do have the correct files, please rename them to have either \".sam\" or \".sam.gz\" extensions.\n");
+    print_error("SAM directory or list does not contain any files with extensions \".sam\" or \".sam.gz\".\nIf you do have the correct files, please rename them to have either \".sam\" or \".sam.gz\" extensions.\n");
   else
     fprintf(stdout, "\n\n%d file%s loaded.\n", fileCnt, fileCnt>1 ? "s" : "");
   
@@ -199,7 +266,7 @@ void read_mapfiles(char *indirSAM, char *depthFile, char gzSAM){
 
 
 
-void readSAM(char *indirSAM, char *fname, char gzSAM, long *cw_total, long *sw_total, long *lw_total){
+void readSAM(char *indirSAM, int dir_or_list, char *fname, char gzSAM, long *cw_total, long *sw_total, long *lw_total){
   FILE *sam;
 
   char *samfile;
@@ -215,9 +282,12 @@ void readSAM(char *indirSAM, char *fname, char gzSAM, long *cw_total, long *sw_t
 
   samfile = (char *) getMem (sizeof(char) * (strlen(indirSAM) + strlen(fname) + 2));
 
-  sprintf(samfile, "%s/%s", indirSAM, fname);
-
-  sam = my_fopen(samfile, "r", gzSAM);
+  if (dir_or_list == SAMDIR){
+    sprintf(samfile, "%s/%s", indirSAM, fname);
+    sam = my_fopen(samfile, "r", gzSAM);
+  }
+  else
+    sam = my_fopen(fname, "r", gzSAM);
 
   prevChrom[0] = 0;
 

@@ -16,7 +16,7 @@ static int q_compare(const void *p1, const void *p2){
 
 void call_cnv(char *depthFile, char *out_prefix,char* glist){
 
-  int i, j, k;
+  int i, j;// k;
 
   float *gclookup;
   float *gclookup_x;
@@ -24,11 +24,11 @@ void call_cnv(char *depthFile, char *out_prefix,char* glist){
   char *fname;
   char logname[2 * MAX_STR];
   FILE *log;
-  float maxcutlw, maxcutsw;
-  float max;
-  float max_x;
-  float min;
-  float min_x;
+  //float maxcutlw, maxcutsw;
+  //float max;
+  //float max_x;
+  //float min;
+  //float min_x;
 
   if (GENOME_CONF == NULL)
     print_error("Select genome configuration file (input) through the -conf parameter.\n");
