@@ -15,8 +15,12 @@ $(EXECUTABLE): $(OBJECTS)
 .c.o:
 	$(CC) $(CFLAGS) $< -o $@
 
+auto: utils.c mrcanavar-auto.c
+	$(CC) $(CFLAGS) utils.c
+	$(CC) mrcanavar-auto.c utils.o -o mrcanavar-auto $(LDFLAGS)
+
 clean: 
-	rm -f $(EXECUTABLE) *.o *~ \#* 
+	rm -f $(EXECUTABLE) mrcanavar-auto *.o *~ \#* 
 
 install:	
 	cp mrcanavar $(BIN)

@@ -796,7 +796,7 @@ void read_gene(char *glist, char *out_prefix){
   char rest_of_list[1000];
   float copy_n[10000];
   char  chr[100];
-
+  char *token;
   char *ret = 0;
      
   out_fname = (char *) getMem(sizeof (char) * (strlen(glist) + strlen(".out.bed") + 2));
@@ -808,9 +808,26 @@ void read_gene(char *glist, char *out_prefix){
   g_out= my_fopen(out_fname, "w", 0);
 	
   fprintf(stdout, "Reading gene list: %s ....\n",glist);
-  fprintf(stdout, "Writing to: %s (This may take a while)\n",out_fname);
-     
-  fprintf(g_out, "#%s\t%s\t%s\t%s\t%s\t%s\n\n", "CHROM", "START", "END", "BP_LENGTH" ,"MEDIAN", "AVERAGE");
+  fprintf(stdout, "Writing to: %s \n",out_fname);
+  i = fscanf(geneList, "%s\t%d\t%d", chr, &start, &end);
+  ret = fgets(rest_of_list, 1000, geneList);
+  rewind(geneList);
+
+  i=1;
+  token = strtok(rest_of_list, "\t");
+  while (token != NULL){
+    i++;
+    token = strtok(NULL, "\t");
+  }
+  
+  fprintf(g_out, "#%s\t%s\t%s\t%s", "CHROM", "START", "END", "BP_LENGTH");
+
+  for (j=0; j<i; j++)
+    fprintf(g_out, "\t");
+  
+  fprintf(g_out, "%s\t%s\n", "MEDIAN", "AVERAGE");
+
+
 
   for (i = 0; i < num_chrom; i++){
         
@@ -872,9 +889,9 @@ void read_gene(char *glist, char *out_prefix){
       qsort(copy_n, cur, sizeof (float), q_compare);
       //Print the output of gene list
       if (total != 0)
-	fprintf(g_out, "%s\t%d\t%d\t%d\t%s\t%f\t%f\n", chr, start, end, count, rest_of_list, copy_n[cur/2], (total/cur) );
+	fprintf(g_out, "%s\t%d\t%d\t%d%s\t%f\t%f\n", chr, start, end, count, rest_of_list, copy_n[cur/2], (total/cur) );
       else
-	fprintf(g_out, "%s\t%d\t%d\t%d\t%s\t%f\t%f\n", chr, start, end, count, rest_of_list, 0.0, 0.0);
+	fprintf(g_out, "%s\t%d\t%d\t%d%s\t%f\t%f\n", chr, start, end, count, rest_of_list, 0.0, 0.0);
 	  
       cur=0;
       count=0;

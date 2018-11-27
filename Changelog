@@ -1,3 +1,7 @@
+Noveber 27, 2018:
+	version 1.1:
+		* mrcanavar-auto added for automated mapping & calling. Assumes that some files are available in the working directory. Use it with caution.
+
 November 20, 2018:
 	version 1.0:
 		* SAM(.gz) files in READ mode can now be passed as comma-separated list.
