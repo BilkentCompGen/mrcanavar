@@ -176,3 +176,25 @@ mrCaNaVaR operates on three classses of sliding windows over the reference genom
 					  Default is 7.
 		-cut_win  <cwin_cutoff> : Window number cutoff. Default is 6.
 		--verbose : Verbose output.
+
+# Automated run.
+
+To compile:
+	
+	make && make auto
+
+mrcanavar-auto is a wrapper for mrsFAST and mrCaNaVaR. It assumes that both mrsFAST and mrCaNaVaR are available in your PATH. It also assumes that the mrsFAST index file is available in the same directory as the reference genome. Simply run:
+
+	mrcanavar-auto --ref repeat_masked_ref.fa --input file1.fastq.gz,file2.fastq.gz,file3.fastq.gz --conf repeat_masked_ref.cnvr --gene repeat_masked_ref.genes.bed
+
+Full parameter list:
+	
+	--input [list]: comma-separated FASTQ(.gz) files.
+	--ref [ref.fa]: repeat masked reference genome. mrsFAST index (ref.fa.index) should be in the same directory.
+	--conf [ref.cnvr]: mrCaNaVaR config file.
+	--gene [genes.bed]: List of genes.
+	--threads [int]: number of threads for mrsFAST.
+	--skip-mapping: Skip mrsFAST mapping. Use this only if you have the mapping output and rerunning mrCaNaVaR for some reason.
+	--cloud: Cloud mode, the directory info from the input file names will be stripped for output file generation.
+	--dry-run: Do not execute commands, just print them.
+

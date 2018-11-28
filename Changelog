@@ -1,4 +1,8 @@
-Noveber 27, 2018:
+November 28, 2018:
+	version 1.1.1:
+		* Dry run and "cloud mode" added to mrcanavar-auto.
+
+November 27, 2018:
 	version 1.1:
 		* mrcanavar-auto added for automated mapping & calling. Assumes that some files are available in the working directory. Use it with caution.
 

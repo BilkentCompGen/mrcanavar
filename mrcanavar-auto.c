@@ -12,12 +12,16 @@ char *cnvr_conf;
 char *gene_list;
 int num_threads;
 int skip_map;
+char is_cloud[64];
+int dry_run;
 
 void print_help(void){
   fprintf(stderr, "Usage:\n\n");
   fprintf(stderr, "mrcanavar-auto\n\t--input [list]: comma-separated FASTQ(.gz) files.\n\t--ref [ref.fa]: repeat masked reference genome. mrsFAST index (ref.fa.index) should be in the same directory.\n");
   fprintf(stderr, "\t--conf [ref.cnvr]: mrCaNaVaR config file.\n\t--gene [genes.bed]: List of genes.\n\t--threads [int]: number of threads for mrsFAST.\n");
-  fprintf(stderr, "\t--skip-mapping: Skip mrsFAST mapping. Use this only if you have the mapping output and rerunning mrCaNaVaR for some reason.\n\n");
+  fprintf(stderr, "\t--skip-mapping: Skip mrsFAST mapping. Use this only if you have the mapping output and rerunning mrCaNaVaR for some reason.\n");
+  fprintf(stderr, "\t--cloud: Cloud mode, the directory info from the input file names will be stripped for output file generation.\n");
+  fprintf(stderr, "\t--dry-run: Do not execute commands, just print them.\n\n");
 }
 
 int parse_command_line( int argc, char** argv)
@@ -25,6 +29,8 @@ int parse_command_line( int argc, char** argv)
   
   int o;
   int index;
+  static int do_cloud = 0;
+
   
   ref_genome = NULL;  input_files = NULL;  cnvr_conf = NULL;  gene_list = NULL;
   
@@ -36,6 +42,8 @@ int parse_command_line( int argc, char** argv)
       {"gene" , required_argument, 0, 'g'},    
       {"threads" , required_argument, 0, 't'},    
       {"skip-mapping" , no_argument, &skip_map, 1},    
+      {"cloud" , no_argument, &do_cloud, 1},    
+      {"dry-run" , no_argument, &dry_run, 1},    
       {0 , 0, 0, 0 }
     };
   
@@ -85,7 +93,25 @@ int parse_command_line( int argc, char** argv)
     return -1;
   }
 
+  if (do_cloud)
+    strcpy(is_cloud, "--cloud");
+  
   return 0;
+}
+
+char * pacman_directories(char *fname){
+  char *last_slash;
+  //fprintf(stderr, "Eating %s  ->  ", fname);
+  last_slash = strrchr(fname, '/');
+  if (last_slash != NULL){
+    //fprintf(stderr, "%s\n", last_slash+1);
+    return last_slash+1;
+  }
+  else
+    ;
+  //fprintf(stderr, "%s\n", fname);
+
+  return fname;
 }
 
 int main (int argc, char **argv){
@@ -99,7 +125,9 @@ int main (int argc, char **argv){
   
   char cmd_line[1048576];
   char tmp_line[1048576];
+  is_cloud[0] = 0;
 
+  dry_run = 0;
   skip_map = 0;
   num_threads = 4;
   
@@ -129,16 +157,24 @@ int main (int argc, char **argv){
   for (i=0; i<number_of_fastq; i++){
     
     if (endswith (fastq_files[i], ".gz")) 
-      sprintf(cmd_line, "mrsfast --search %s --seq %s --seqcomp --outcomp -t %d --mem 6 --crop 36 -e 2", ref_genome, fastq_files[i], num_threads);
+      sprintf(cmd_line, "mrsfast %s --search %s --seq %s --seqcomp --outcomp -t %d --mem 6 --crop 36 -e 2", is_cloud, ref_genome, fastq_files[i], num_threads);
     else
-      sprintf(cmd_line, "mrsfast --search %s --seq %s --outcomp -t %d --mem 6 --crop 36 -e 2", ref_genome, fastq_files[i], num_threads);
+      sprintf(cmd_line, "mrsfast %s --search %s --seq %s --outcomp -t %d --mem 6 --crop 36 -e 2", is_cloud,  ref_genome, fastq_files[i], num_threads);
 
-    printf("[MAPPING] %s\n", cmd_line);
+    fprintf(stderr, "[MAPPING] %s\n", cmd_line);
 
-    if (!skip_map)
+    if (!skip_map && !dry_run)
       system(cmd_line);
   }
 
+  fprintf(stderr, "[PROGRESS] Read mapping done. Now reading SAM files.\n");
+
+
+  if (is_cloud[0] == '-'){
+    for (i=0; i<number_of_fastq; i++)
+      fastq_files[i] = pacman_directories(fastq_files[i]);
+  }
+  
   /* read */
 
   if (number_of_fastq == 1){
@@ -156,12 +192,18 @@ int main (int argc, char **argv){
   sprintf(cmd_line, "mrcanavar --read --gz -conf %s -samlist %s -depth %s.depth", cnvr_conf, tmp_line, fastq_files[0]);
 
   }
+
+  fprintf(stderr, "[PROGRESS] SAM files loaded. Now calling copy numbers and CNVs.\n");
   
-  printf("[READ SAM FILES] %s\n", cmd_line);
-  system(cmd_line);
+  fprintf(stderr, "[READ SAM FILES] %s\n", cmd_line);
+  if (!dry_run)
+    system(cmd_line);
   /* call */
 
   sprintf(cmd_line, "mrcanavar --call -conf %s -depth %s.depth -gene %s -o %s-out", cnvr_conf, fastq_files[0], gene_list, fastq_files[0]);
-  printf("[CALL COPY NUMBERS] %s\n", cmd_line);
-  system(cmd_line);
+  fprintf(stderr, "[CALL COPY NUMBERS] %s\n", cmd_line);
+  if (!dry_run)
+    system(cmd_line);
+
+  fprintf(stderr, "[PROGRESS] Done.\n");
 }
