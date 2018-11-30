@@ -139,9 +139,10 @@ void call_cnv(char *depthFile, char *out_prefix,char* glist){
 
   calculate_dups(out_prefix);
   
-  /* recalculate stats for deletion calls */
+  /* recalculate stats for deletion calls 
   
   fprintf(stderr, "Recalculating stats for deletion calls. LW: %f/%f SW: %f/%f\n", LW_MEAN, LW_STD, SW_MEAN, SW_STD);
+  */
   
   /*
 
@@ -205,14 +206,14 @@ void call_cnv(char *depthFile, char *out_prefix,char* glist){
 
 void calculate_dups(char *out_prefix){
 
-  printf("Calculating duplications....\n");
+  fprintf(stderr, "Calculating duplications....\n");
   calculate_intervals(out_prefix, DUPS);
 
 }
 
 void calculate_dels(char *out_prefix){
 
-  printf("Calculating deletions....\n");
+  fprintf(stderr, "Calculating deletions....\n");
   // init dw here...
   calculate_intervals(out_prefix, DELS);
  
@@ -796,41 +797,40 @@ void read_gene(char *glist, char *out_prefix){
   char rest_of_list[1000];
   float copy_n[10000];
   char  chr[100];
-  char *token;
   char *ret = 0;
      
-  out_fname = (char *) getMem(sizeof (char) * (strlen(glist) + strlen(".out.bed") + 2));
+  out_fname = (char *) getMem(sizeof (char) * (strlen(out_prefix) + strlen(".genes.bed") + 2));
 
-  geneList=fopen(glist, "r");
+  geneList = fopen(glist, "r");
      
   sprintf (out_fname, "%s.genes.bed", out_prefix);
-
+  printf("Writing to : %s\n", out_fname);
   g_out= my_fopen(out_fname, "w", 0);
 	
   fprintf(stdout, "Reading gene list: %s ....\n",glist);
   fprintf(stdout, "Writing to: %s \n",out_fname);
-  i = fscanf(geneList, "%s\t%d\t%d", chr, &start, &end);
+
   ret = fgets(rest_of_list, 1000, geneList);
-  rewind(geneList);
 
   i=1;
-  token = strtok(rest_of_list, "\t");
-  while (token != NULL){
-    i++;
-    token = strtok(NULL, "\t");
-  }
+
+  for (j=0; j<strlen(rest_of_list); j++)
+    if (rest_of_list[j] == '\t') i++;
+
+  i = i - 2;
   
   fprintf(g_out, "#%s\t%s\t%s\t%s", "CHROM", "START", "END", "BP_LENGTH");
-
+  
   for (j=0; j<i; j++)
     fprintf(g_out, "\t");
+  
   
   fprintf(g_out, "%s\t%s\n", "MEDIAN", "AVERAGE");
 
 
+  rewind(geneList);
 
   for (i = 0; i < num_chrom; i++){
-        
     while (fscanf(geneList, "%s\t%d\t%d", chr, &start, &end) > 0){
       //Gets the portion of the genelist file after 'END'
       ret = fgets(rest_of_list, 1000, geneList);

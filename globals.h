@@ -6,8 +6,8 @@
 #define MAX_STR 256
 #define GC_BIN  1000
 
-#define VERSION "1.1"
-#define LAST_UPDATE "November7 26, 2018"
+#define VERSION "1.1.2"
+#define LAST_UPDATE "November 30, 2018"
 
 
 enum MODETYPE {NONE, PREP, READSAM, CALL, CONC};
