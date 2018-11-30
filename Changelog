@@ -1,3 +1,7 @@
+November 30, 2018:
+	version 1.1.2:
+		* Memory leak in gene copy number calculation is fixed.
+
 November 28, 2018:
 	version 1.1.1:
 		* Dry run and "cloud mode" added to mrcanavar-auto.
