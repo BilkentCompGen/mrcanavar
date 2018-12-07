@@ -228,6 +228,7 @@ void printHelp(char *binfile){
   fprintf (stdout, "======== READ MODE COMPULSORY PARAMETERS ========\n\n");
   fprintf (stdout, "\t-conf   <config_file>   : Reference configuration file (input).\n");
   fprintf (stdout, "\t-samdir <sam_dir>       : Directory that contains SAM files for mapping information.\n");
+  fprintf (stdout, "\t-samlist <sam_list>     : Alternative to -samdir. Comma separated list of SAM files for mapping information.\n");
   fprintf (stdout, "\t-depth  <depth_file>    : Read depth file (output).\n\n");
   fprintf (stdout, "========  READ MODE OPTIONAL PARAMETERS  ========\n\n");
   fprintf (stdout, "\t--gz                    : Indicates that the SAM files are compressed in gzip format.\n");
@@ -250,7 +251,7 @@ void printHelp(char *binfile){
   fprintf (stdout, "\t-mindup <min_dup_len>   : Minimum duplication length. Default is 10000.\n");
   fprintf (stdout, "\t-gene <genelist>        : Coordinates for genes for calculating gene-based copy numbers.\n");
   fprintf (stdout, "\t-cont_win <cwin_number> : Contiguous window number to look for high/low depth windows. Default is 7.\n");
-  fprintf (stdout, "\t-cut_win  <cwin_cutoff> : Window number cutoff. Default is 6.\n\n");
+  fprintf (stdout, "\t-cut_win  <cwin_cutoff> : Window number cutoff. Default is 6.\n");
   fprintf (stdout, "\t--verbose               : Verbose output.\n\n");
 
 
