@@ -250,9 +250,10 @@ void calculate_intervals(char *out_prefix, enum CALLTYPE type){
     j=0;
     while (j < chromosomes[i]->lw_cnt){
       window=j+CONT_WINDOW;
+      ///      fprintf(stderr, "[WHI] j: %d k: %d lwcnt: %d chroom: %s\n", j, k, chromosomes[i]->lw_cnt, chromosomes[i]->name);
       if ( window > chromosomes[i]->lw_cnt)
         window=chromosomes[i]->lw_cnt-1;
-
+      //fprintf(stderr, "window: %d\n", window);
       //If the gene is Autosome go into this.
       if (isAutosome(chromosomes[i]->lw, j, i)){
 
@@ -268,6 +269,8 @@ void calculate_intervals(char *out_prefix, enum CALLTYPE type){
 	    }	      
 	  }
 	}
+
+	//fprintf(stderr, "t this is autosome. k = %d\n", k);
 
 	if(num_dups >= CUT_WINDOW){
 	  chromosomes[i]->dw[cur_dup].start=chromosomes[i]->lw[j].start;
@@ -294,8 +297,9 @@ void calculate_intervals(char *out_prefix, enum CALLTYPE type){
 	}
 	
 	num_dups=0;
+	//fprintf(stderr, "[PRE] j: %d k: %d lwcnt: %d\n", j, k, chromosomes[i]->lw_cnt);
 	j=k+1;
-	
+	//fprintf(stderr, "[POS] j: %d k: %d lwcnt: %d\n", j, k, chromosomes[i]->lw_cnt);
       }
 
       else{
@@ -339,7 +343,7 @@ void calculate_intervals(char *out_prefix, enum CALLTYPE type){
         }
 
         num_dups=0;
-        j=k;
+	j = k+1;
       }
     }
     

@@ -5,13 +5,13 @@ RUN mkdir /mrcanavar
 RUN mkdir /input
 RUN mkdir /output
 WORKDIR /mrcanavar
-RUN wget https://github.com/BilkentCompGen/mrcanavar/archive/v1.1.2.tar.gz
+RUN wget https://github.com/BilkentCompGen/mrcanavar/archive/v1.1.3.tar.gz
 RUN wget https://github.com/calkan/mrsfast/archive/3.4.3.tar.gz
 RUN tar zxf v1.1.2.tar.gz
 RUN tar zxf 3.4.3.tar.gz 
-RUN cd mrcanavar-1.1.2 && make && make install && cd /
+RUN cd mrcanavar-1.1.3 && make && make install && cd /
 RUN cd mrsfast-3.4.3 && make && cp mrsfast /usr/local/bin && cd /
-RUN rm -f v1.1.2.tar.gz 3.4.3.tar.gz
+RUN rm -f v1.1.3.tar.gz 3.4.3.tar.gz
 VOLUME /input
 VOLUME /output
 #ENTRYPOINT ["/usr/bin/"]

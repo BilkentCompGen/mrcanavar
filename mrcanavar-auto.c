@@ -116,7 +116,7 @@ char * pacman_directories(char *fname){
 
 int main (int argc, char **argv){
   int ret;
-  int i;
+  int i = 0;
   
   int number_of_fastq = 0;
   char **fastq_files;
@@ -164,7 +164,7 @@ int main (int argc, char **argv){
     fprintf(stderr, "[MAPPING] %s\n", cmd_line);
 
     if (!skip_map && !dry_run)
-      system(cmd_line);
+      ret = system(cmd_line);
   }
 
   fprintf(stderr, "[PROGRESS] Read mapping done. Now reading SAM files.\n");
@@ -197,13 +197,13 @@ int main (int argc, char **argv){
   
   fprintf(stderr, "[READ SAM FILES] %s\n", cmd_line);
   if (!dry_run)
-    system(cmd_line);
+    ret = system(cmd_line);
   /* call */
 
   sprintf(cmd_line, "mrcanavar --call -conf %s -depth %s.depth -gene %s -o %s-out", cnvr_conf, fastq_files[0], gene_list, fastq_files[0]);
   fprintf(stderr, "[CALL COPY NUMBERS] %s\n", cmd_line);
   if (!dry_run)
-    system(cmd_line);
+    ret = system(cmd_line);
 
   fprintf(stderr, "[PROGRESS] Done.\n");
 }

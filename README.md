@@ -2,7 +2,8 @@ mrCaNaVaR analyzes the mapping read depth to discover large segmental duplicatio
 
 # Citation
 
-Personalized copy number and segmental duplication maps using next-generation sequencing. Can Alkan, Jeffrey M. Kidd, Tomas Marques-Bonet, Gozde Aksay, Francesca Antonacci, Fereydoun Hormozdiari, Jacob O. Kitzman, Carl Baker, Maika Malig, Onur Mutlu, S. Cenk Sahinalp, Richard A. Gibbs, Evan E. Eichler. Nature Genetics, Oct, 41(10):1061-1067, 2009.
+* Personalized copy number and segmental duplication maps using next-generation sequencing. Can Alkan, Jeffrey M. Kidd, Tomas Marques-Bonet, Gozde Aksay, Francesca Antonacci, Fereydoun Hormozdiari, Jacob O. Kitzman, Carl Baker, Maika Malig, Onur Mutlu, S. Cenk Sahinalp, Richard A. Gibbs, Evan E. Eichler. Nature Genetics, Oct, 41(10):1061-1067, 2009.
+* Whole-genome shotgun sequence CNV detection using read depth. Fatma Kahveci and Can Alkan. Methods Mol Biol., 1833:61-72, 2018.
 
 # Basics & Definitions
 
