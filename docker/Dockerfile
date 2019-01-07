@@ -1,5 +1,6 @@
 FROM ubuntu:18.04
 RUN apt-get update --fix-missing -y
+RUN apt-get upgrade
 RUN apt-get install wget make gcc zlib1g-dev -y
 RUN mkdir /mrcanavar
 RUN mkdir /input
@@ -14,4 +15,3 @@ RUN cd mrsfast-3.4.3 && make && cp mrsfast /usr/local/bin && cd /
 RUN rm -f v1.1.3.tar.gz 3.4.3.tar.gz
 VOLUME /input
 VOLUME /output
-#ENTRYPOINT ["/usr/bin/"]
