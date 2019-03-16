@@ -89,7 +89,7 @@ void read_mapfiles(char *sams, char *depthFile, char gzSAM, int dir_or_list){
     rewinddir(dp);
   }
 
-  else {
+  else if (dir_or_list == SAMLIST) {
     token = strtok(safe_sams, ",");
     while (token != NULL){
       if (endswith(token, ".gz") && gzSAM == 0)
@@ -113,7 +113,8 @@ void read_mapfiles(char *sams, char *depthFile, char gzSAM, int dir_or_list){
     }
   }
 
-  
+  else if (dir_or_list == SAMSTDIN)
+    totalFile = 1;
   
   n_iter = totalFile; // Defult case for SAM's in samdir
 
@@ -151,19 +152,9 @@ void read_mapfiles(char *sams, char *depthFile, char gzSAM, int dir_or_list){
     closedir(dp);
   }
   
-  else {        
+  else if (dir_or_list == SAMLIST) {        
     // process list
-    /*
-    token = strtok(safe_sams, ",");
-    while (token != NULL){
-      fprintf(stdout, "\r                                                      \rLoading file %d of total %d: %s...", (fileCnt+1), totalFile, token);
-      fflush(stdout);
-      if (CHECKSAM && !endswith(token, ".sam") && !endswith(token, ".sam.gz"))
-	continue;
-      readSAM(sams, dir_or_list, token, gzSAM, &cw_total, &sw_total, &lw_total);
-      token = strtok (NULL, ",");
-      fileCnt++;
-      }*/
+
     for (i=0; i<totalFile; i++){
       fprintf(stdout, "\r                                                      \rLoading file %d of total %d: %s...", (fileCnt+1), totalFile, filenames[i]);
       fflush(stdout);
@@ -179,6 +170,11 @@ void read_mapfiles(char *sams, char *depthFile, char gzSAM, int dir_or_list){
     
   }
 
+  else if (dir_or_list == SAMSTDIN){
+    readSAM(sams, dir_or_list, "stdin", 0, &cw_total, &sw_total, &lw_total);
+    fileCnt = 1;
+  }
+  
   free(safe_sams);
   
   if (fileCnt == 0)
@@ -286,9 +282,11 @@ void readSAM(char *indirSAM, int dir_or_list, char *fname, char gzSAM, long *cw_
     sprintf(samfile, "%s/%s", indirSAM, fname);
     sam = my_fopen(samfile, "r", gzSAM);
   }
-  else
+  else if (dir_or_list == SAMLIST)
     sam = my_fopen(fname, "r", gzSAM);
-
+  else if (dir_or_list == SAMSTDIN)
+    sam = stdin;
+  
   prevChrom[0] = 0;
 
   while (1){
@@ -400,7 +398,7 @@ void readSAM(char *indirSAM, int dir_or_list, char *fname, char gzSAM, long *cw_
 
   if (gzSAM)
     gzclose((gzFile)sam);
-  else
+  else if (sam != stdin)
     fclose(sam);
 
   freeMem(samfile, sizeof(char) * (strlen(indirSAM) + strlen(fname) + 2));

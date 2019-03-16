@@ -111,6 +111,9 @@ int main(int argc, char **argv){
     else if (!strcmp(argv[i], "-samlist"))
       set_str(&inSAMlist, argv[i+1]);
   
+    else if (!strcmp(argv[i], "-samstdin"))
+      set_str(&inSAMlist, "stdin");
+  
   
     /* optional parameters for the SAM mode */
     else if (!strcmp(argv[i], "--gz"))
@@ -169,18 +172,20 @@ int main(int argc, char **argv){
     fprintf(stdout, "Mode: Read SAM ...\n");
 
     if (indirSAM == NULL && inSAMlist == NULL){
-      print_error("Use either -samdir or -samlist parameter to pass the input SAM files.\n");
+      print_error("Use either -samdir, -samlist, or -samstdin parameter to pass the input SAM files.\n");
     }
     
     else if (indirSAM != NULL && inSAMlist != NULL){
-      print_error("Use either -samdir or -samlist parameter to pass the input SAM files. Not both!\n");
+      print_error("Use either -samdir, -samlist, or -samstdin parameter to pass the input SAM files. Not both!\n");
     }
     
   
     if (indirSAM != NULL)
       read_mapfiles(indirSAM, depthFile, gzSAM, SAMDIR);
-    else
+    else if (strcmp (inSAMlist, "stdin"))
       read_mapfiles(inSAMlist, depthFile, gzSAM, SAMLIST);
+    else
+      read_mapfiles(inSAMlist, depthFile, gzSAM, SAMSTDIN);
     break;
   case CALL:
     fprintf(stdout, "Mode: Call copy numbers ...\n");
@@ -229,6 +234,7 @@ void printHelp(char *binfile){
   fprintf (stdout, "\t-conf   <config_file>   : Reference configuration file (input).\n");
   fprintf (stdout, "\t-samdir <sam_dir>       : Directory that contains SAM files for mapping information.\n");
   fprintf (stdout, "\t-samlist <sam_list>     : Alternative to -samdir. Comma separated list of SAM files for mapping information.\n");
+  fprintf (stdout, "\t-samstdin               : Alternative to -samdir and -samlist. Load mapping info directly as uncompressed SAM from standard input.\n");
   fprintf (stdout, "\t-depth  <depth_file>    : Read depth file (output).\n\n");
   fprintf (stdout, "========  READ MODE OPTIONAL PARAMETERS  ========\n\n");
   fprintf (stdout, "\t--gz                    : Indicates that the SAM files are compressed in gzip format.\n");
