@@ -243,14 +243,14 @@ int main (int argc, char **argv){
       
       if ( bam_mode == 0 ){
 	if (endswith (fastq_files[i], ".gz")){
-	  sprintf(cmd_line, "mrsfast-s %s --search %s --seq %s --seqcomp %s -t %d --mem %d --crop %d -e 2 --disable-nohits", is_cloud, ref_genome, fastq_files[i], outcomp, num_threads, mem, kmerlen);
+	  sprintf(cmd_line, "mrsfast %s --search %s --seq %s --seqcomp %s -t %d --mem %d --crop %d -e 2 --disable-nohits", is_cloud, ref_genome, fastq_files[i], outcomp, num_threads, mem, kmerlen);
 	}
 	else
-	  sprintf(cmd_line, "mrsfast-s %s --search %s --seq %s %s -t %d --mem %d --crop %d -e 2 --disable-nohits", is_cloud,  ref_genome, fastq_files[i], outcomp, num_threads, mem, kmerlen);
+	  sprintf(cmd_line, "mrsfast %s --search %s --seq %s %s -t %d --mem %d --crop %d -e 2 --disable-nohits", is_cloud,  ref_genome, fastq_files[i], outcomp, num_threads, mem, kmerlen);
       }
       else if (number_of_fastq == 1){
 	/* samtools and pipe */
-	sprintf(cmd_line, "samtools view -@ %d -T %s %s | awk '{print \">\"$1\"\\n\"$10}' | mrsfast-s %s --search %s --seq /dev/stdin %s -t %d --mem %d --crop %d -e 2 -o %s --disable-nohits", num_threads, unmasked_ref_genome, fastq_files[i], is_cloud,  ref_genome,  outcomp, num_threads, mem, kmerlen, fastq_files[i]);
+	sprintf(cmd_line, "samtools view -@ %d -T %s %s | awk '{print \">\"$1\"\\n\"$10}' | mrsfast %s --search %s --seq /dev/stdin %s -t %d --mem %d --crop %d -e 2 -o %s --disable-nohits", num_threads, unmasked_ref_genome, fastq_files[i], is_cloud,  ref_genome,  outcomp, num_threads, mem, kmerlen, fastq_files[i]);
       }
       
       fprintf(stderr, "[MAPPING] %s\n", cmd_line);
@@ -271,9 +271,9 @@ int main (int argc, char **argv){
     
     if (number_of_fastq == 1){
       if (uncompressed)
-	sprintf(cmd_line, "mrcanavar-s --read -conf %s -samlist %s.sam -depth %s.depth", cnvr_conf, fastq_files[0], fastq_files[0]);
+	sprintf(cmd_line, "mrcanavar --read -conf %s -samlist %s.sam -depth %s.depth", cnvr_conf, fastq_files[0], fastq_files[0]);
       else
-	sprintf(cmd_line, "mrcanavar-s --read --gz -conf %s -samlist %s.sam.gz -depth %s.depth", cnvr_conf, fastq_files[0], fastq_files[0]);
+	sprintf(cmd_line, "mrcanavar --read --gz -conf %s -samlist %s.sam.gz -depth %s.depth", cnvr_conf, fastq_files[0], fastq_files[0]);
     }
     else{
       tmp_line[0] = 0;
@@ -291,9 +291,9 @@ int main (int argc, char **argv){
 	strcat(tmp_line, ".sam.gz");
       
       if (uncompressed)
-	sprintf(cmd_line, "mrcanavar-s --read -conf %s -samlist %s -depth %s.depth", cnvr_conf, tmp_line, fastq_files[0]);
+	sprintf(cmd_line, "mrcanavar --read -conf %s -samlist %s -depth %s.depth", cnvr_conf, tmp_line, fastq_files[0]);
       else
-	sprintf(cmd_line, "mrcanavar-s --read --gz -conf %s -samlist %s -depth %s.depth", cnvr_conf, tmp_line, fastq_files[0]);
+	sprintf(cmd_line, "mrcanavar --read --gz -conf %s -samlist %s -depth %s.depth", cnvr_conf, tmp_line, fastq_files[0]);
       
     }
 
@@ -308,16 +308,16 @@ int main (int argc, char **argv){
   else{  // pipe directly into mrcanavar
     if ( bam_mode == 0 ){
       if (endswith (fastq_files[i], ".gz")){
-	sprintf(tmp_line, "mrsfast-s %s --search %s --seq %s --seqcomp -t %d --mem %d --crop %d -e 2 --disable-nohits -o /dev/stdout ", is_cloud, ref_genome, fastq_files[i], num_threads, mem, kmerlen);
+	sprintf(tmp_line, "mrsfast %s --search %s --seq %s --seqcomp -t %d --mem %d --crop %d -e 2 --disable-nohits -o /dev/stdout ", is_cloud, ref_genome, fastq_files[i], num_threads, mem, kmerlen);
       }
       else
-	sprintf(tmp_line, "mrsfast-s %s --search %s --seq %s -t %d --mem %d --crop %d -e 2 --disable-nohits -o /dev/stdout", is_cloud,  ref_genome, fastq_files[i], num_threads, mem, kmerlen);
+	sprintf(tmp_line, "mrsfast %s --search %s --seq %s -t %d --mem %d --crop %d -e 2 --disable-nohits -o /dev/stdout", is_cloud,  ref_genome, fastq_files[i], num_threads, mem, kmerlen);
     }
     else { // bam/cram to mrcanavar
-      sprintf(tmp_line, "samtools view -@ %d -T %s %s | awk '{print \">\"$1\"\\n\"$10}' | mrsfast-s %s --search %s --seq /dev/stdin -t %d --mem %d --crop %d -e 2 -o /dev/stdout --disable-nohits", num_threads, unmasked_ref_genome, fastq_files[0], is_cloud,  ref_genome, num_threads, mem, kmerlen);      
+      sprintf(tmp_line, "samtools view -@ %d -T %s %s | awk '{print \">\"$1\"\\n\"$10}' | mrsfast %s --search %s --seq /dev/stdin -t %d --mem %d --crop %d -e 2 -o /dev/stdout --disable-nohits", num_threads, unmasked_ref_genome, fastq_files[0], is_cloud,  ref_genome, num_threads, mem, kmerlen);      
     }
     
-    sprintf(cmd_line, "%s | mrcanavar-s --read -conf %s -samstdin -depth %s.depth", tmp_line, cnvr_conf, fastq_files[0]);
+    sprintf(cmd_line, "%s | mrcanavar --read -conf %s -samstdin -depth %s.depth", tmp_line, cnvr_conf, fastq_files[0]);
 
     fprintf(stderr, "[MAP AND READ] %s\n", cmd_line);
     if (!dry_run)
@@ -327,7 +327,7 @@ int main (int argc, char **argv){
   
   /* call */
 
-  sprintf(cmd_line, "mrcanavar-s --call -conf %s -depth %s.depth -gene %s -o %s-out", cnvr_conf, fastq_files[0], gene_list, fastq_files[0]);
+  sprintf(cmd_line, "mrcanavar --call -conf %s -depth %s.depth -gene %s -o %s-out", cnvr_conf, fastq_files[0], gene_list, fastq_files[0]);
   fprintf(stderr, "[CALL COPY NUMBERS] %s\n", cmd_line);
   if (!dry_run)
     ret = system(cmd_line);
