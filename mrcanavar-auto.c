@@ -59,6 +59,7 @@ int parse_command_line( int argc, char** argv)
       {"no-gz" , no_argument, &uncompressed, 1},    
       {"no-sam" , no_argument, &nosam, 1},    
       {"dry-run" , no_argument, &dry_run, 1},    
+      {"cloud" , no_argument, &do_cloud, 1},    
       {0 , 0, 0, 0 }
     };
   
@@ -156,7 +157,8 @@ int main (int argc, char **argv){
   
   char cmd_line[1048576];
   char tmp_line[1048576];
-
+  char out_file[1024];
+  
   int bam_mode;
   char outcomp[32];
 
@@ -236,7 +238,7 @@ int main (int argc, char **argv){
     fprintf(stderr, "[WARNING]: --no-sam option works only one FASTQ or BAM/CRAM file is supplied. Removing the parameter from consideration.\n");
     nosam = 0;
   }
-  
+
   /* map */
   if (!nosam){
     for (i=0; i<number_of_fastq; i++){
@@ -266,14 +268,17 @@ int main (int argc, char **argv){
       for (i=0; i<number_of_fastq; i++)
 	fastq_files[i] = pacman_directories(fastq_files[i]);
     }
+
+    strcpy(out_file, fastq_files[0]);
+    fprintf(stderr, "[OUT_FILE] %s\n", out_file);
     
     /* read */
     
     if (number_of_fastq == 1){
       if (uncompressed)
-	sprintf(cmd_line, "mrcanavar --read -conf %s -samlist %s.sam -depth %s.depth", cnvr_conf, fastq_files[0], fastq_files[0]);
+	sprintf(cmd_line, "mrcanavar --read -conf %s -samlist %s.sam -depth %s.depth", cnvr_conf, fastq_files[0], out_file);
       else
-	sprintf(cmd_line, "mrcanavar --read --gz -conf %s -samlist %s.sam.gz -depth %s.depth", cnvr_conf, fastq_files[0], fastq_files[0]);
+	sprintf(cmd_line, "mrcanavar --read --gz -conf %s -samlist %s.sam.gz -depth %s.depth", cnvr_conf, fastq_files[0], out_file);
     }
     else{
       tmp_line[0] = 0;
@@ -291,9 +296,9 @@ int main (int argc, char **argv){
 	strcat(tmp_line, ".sam.gz");
       
       if (uncompressed)
-	sprintf(cmd_line, "mrcanavar --read -conf %s -samlist %s -depth %s.depth", cnvr_conf, tmp_line, fastq_files[0]);
+	sprintf(cmd_line, "mrcanavar --read -conf %s -samlist %s -depth %s.depth", cnvr_conf, tmp_line, out_file);
       else
-	sprintf(cmd_line, "mrcanavar --read --gz -conf %s -samlist %s -depth %s.depth", cnvr_conf, tmp_line, fastq_files[0]);
+	sprintf(cmd_line, "mrcanavar --read --gz -conf %s -samlist %s -depth %s.depth", cnvr_conf, tmp_line, out_file);
       
     }
 
@@ -317,7 +322,7 @@ int main (int argc, char **argv){
       sprintf(tmp_line, "samtools view -@ %d -T %s %s | awk '{print \">\"$1\"\\n\"$10}' | mrsfast %s --search %s --seq /dev/stdin -t %d --mem %d --crop %d -e 2 -o /dev/stdout --disable-nohits", num_threads, unmasked_ref_genome, fastq_files[0], is_cloud,  ref_genome, num_threads, mem, kmerlen);      
     }
     
-    sprintf(cmd_line, "%s | mrcanavar --read -conf %s -samstdin -depth %s.depth", tmp_line, cnvr_conf, fastq_files[0]);
+    sprintf(cmd_line, "%s | mrcanavar --read -conf %s -samstdin -depth %s.depth", tmp_line, cnvr_conf, out_file);
 
     fprintf(stderr, "[MAP AND READ] %s\n", cmd_line);
     if (!dry_run)
@@ -327,7 +332,7 @@ int main (int argc, char **argv){
   
   /* call */
 
-  sprintf(cmd_line, "mrcanavar --call -conf %s -depth %s.depth -gene %s -o %s-out", cnvr_conf, fastq_files[0], gene_list, fastq_files[0]);
+  sprintf(cmd_line, "mrcanavar --call -conf %s -depth %s.depth -gene %s -o %s-out", cnvr_conf, out_file, gene_list, out_file);
   fprintf(stderr, "[CALL COPY NUMBERS] %s\n", cmd_line);
   if (!dry_run)
     ret = system(cmd_line);
