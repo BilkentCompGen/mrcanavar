@@ -6,7 +6,7 @@
 #define MAX_STR 256
 #define GC_BIN  1000
 
-#define VERSION "1.2.2"
+#define VERSION "1.2.3"
 #define LAST_UPDATE "March 18, 2019"
 
 
