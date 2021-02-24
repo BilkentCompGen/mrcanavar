@@ -22,6 +22,7 @@ int uncompressed;
 int nosam; 
 int kmerlen; 
 int ploidy;
+int mincnv;
 
 void print_help(void){ 
   fprintf(stderr, "Usage:\n\n"); 
@@ -29,6 +30,7 @@ void print_help(void){
   fprintf(stderr, "\t--conf [ref.cnvr]: mrCaNaVaR config file.\n\t--gene [genes.bed]: List of genes.\n\t--threads [int]: number of threads for mrsFAST.\n"); 
   fprintf(stderr, "\t--kmer [int]: Cropping length for mrsFAST mapping. Default is 36.\n"); 
   fprintf(stderr, "\t--ploidy [int]: Ploidy value for the organism. Default is 2.\n"); 
+  fprintf(stderr, "\t--mincnv [int]: Minimum length for CNVs to call. Default is 10000.\n"); 
   fprintf(stderr, "\t--skip-mapping: Skip mrsFAST mapping. Use this only if you have the mapping output and rerunning mrCaNaVaR for some reason.\n"); 
   fprintf(stderr, "\t--cloud: Cloud mode, the directory info from the input file names will be stripped for output file generation.\n"); 
   fprintf(stderr, "\t--no-gz: Do not compress mrsFAST output. This option will generate larger files, but it will save some run time.\n"); 
@@ -45,7 +47,7 @@ int parse_command_line( int argc, char** argv)
 
   
   ref_genome = NULL;  input_files = NULL;  cnvr_conf = NULL;  gene_list = NULL; bam_input = NULL; unmasked_ref_genome = NULL; 
-  ploidy = 2;
+  mincnv = 10000; ploidy = 2;
   
   static struct option long_options[] = 
     { 
@@ -53,6 +55,7 @@ int parse_command_line( int argc, char** argv)
       {"aln-input" , required_argument, 0, 'a'}, 
       {"ref" , required_argument, 0, 'f'}, 
       {"ploidy" , required_argument, 0, 'p'}, 
+      {"mincnv" , required_argument, 0, 'd'}, 
       {"unmasked-ref" , required_argument, 0, 'u'}, 
       {"conf" , required_argument, 0, 'c'}, 
       {"gene" , required_argument, 0, 'g'},     
@@ -73,7 +76,7 @@ int parse_command_line( int argc, char** argv)
       return -1; 
     } 
   
-  while( ( o = getopt_long( argc, argv, "i:a:f:p:u:c:g:m:k:t", long_options, &index)) != -1) 
+  while( ( o = getopt_long( argc, argv, "i:a:f:d:p:u:c:g:m:k:t", long_options, &index)) != -1) 
     { 
       switch( o) 
 	{ 
@@ -104,6 +107,9 @@ int parse_command_line( int argc, char** argv)
 	case 'p': 
           ploidy = atoi(optarg); 
 	  break; 
+	case 'd': 
+          mincnv = atoi(optarg); 
+	  break; 
 	case 'k': 
           kmerlen = atoi(optarg); 
 	  break; 
@@ -133,6 +139,10 @@ int parse_command_line( int argc, char** argv)
   } 
   if (ploidy <= 0){
     fprintf (stderr, "Ploidy number should be greater than or equal to 1.\n"); 
+    return -1; 
+  }
+  if (mincnv < 10){
+    fprintf (stderr, "Minimum duplication length cannot be less than 10.\n"); 
     return -1; 
   }
   
@@ -354,7 +364,7 @@ int main (int argc, char **argv){
   
   /* call */
 
-  sprintf(cmd_line, "mrcanavar --call -conf %s -depth %s.depth -ploidy %d -gene %s -o %s-out", cnvr_conf, out_file, ploidy, gene_list, out_file);
+  sprintf(cmd_line, "mrcanavar --call -conf %s -depth %s.depth -ploidy %d -mindup %d -gene %s -o %s-out", cnvr_conf, out_file, ploidy, mincnv, gene_list, out_file);
   fprintf(stderr, "[CALL COPY NUMBERS] %s\n", cmd_line);
   if (!dry_run)
     ret = system(cmd_line);
