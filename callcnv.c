@@ -235,14 +235,14 @@ void calculate_intervals(char *out_prefix, enum CALLTYPE type){
   if (type == DUPS){
     fname = (char *) getMem(sizeof (char) * (strlen(out_prefix) + strlen(".dups.bed") + 2));
     sprintf(fname, "%s.dups.bed", out_prefix);
-    cutoff = LW_MEAN + 4*LW_STD;
-    cutoff_x = LW_MEAN_X + 4*LW_STD_X;
+    cutoff = LW_MEAN + 2 * PLOIDY * LW_STD;
+    cutoff_x = LW_MEAN_X + 2 * PLOIDY * LW_STD_X;
   }
   else {
     fname = (char *) getMem(sizeof (char) * (strlen(out_prefix) + strlen(".dels.bed") + 2));
     sprintf(fname, "%s.dels.bed", out_prefix);
-    cutoff = LW_MEAN - 4*LW_STD;
-    cutoff_x = LW_MEAN_X - 4*LW_STD_X;
+    cutoff = LW_MEAN - 2 * PLOIDY * LW_STD;
+    cutoff_x = LW_MEAN_X - 2 * PLOIDY * LW_STD_X;
   }
 
   for (i = 0; i < num_chrom; i++){
@@ -313,7 +313,7 @@ void calculate_intervals(char *out_prefix, enum CALLTYPE type){
         } 
 	
         for( k=j; k< window; k++){	
-          if(chromosomes[i]->lw[k].depth > (LW_MEAN_X + 4*LW_STD_X) ){
+          if(chromosomes[i]->lw[k].depth > (LW_MEAN_X + 2 * PLOIDY * LW_STD_X) ){
 	    
             num_dups++;
 
@@ -362,15 +362,15 @@ int is_cn_ok(int copy_num, int isAut, enum CALLTYPE type){
 
   if (isAut){
     if (type==DUPS)
-      cnok = 2.5;
+      cnok = 1.25 * PLOIDY;
     else
-      cnok = 1.5;
+      cnok = 0.75 * PLOIDY;
   }
   else{
     if (type==DUPS)
-      cnok = 1.5;
+      cnok = 0.75 * PLOIDY;
     else
-      cnok = 0.5;
+      cnok = 0.25 * PLOIDY;
   }
 
   if (type == DUPS){
@@ -402,11 +402,11 @@ void filter_dw(int i, int cur_dup, int isAut, enum CALLTYPE type){
   for(j=0; j< chromosomes[i]->cw_cnt; j++){
     if(isAut==0){
       //CN calculation
-      copy_num = (chromosomes[i]->cw[j].depth / CW_MEAN) * 2;
+      copy_num = (chromosomes[i]->cw[j].depth / CW_MEAN) * PLOIDY;
       if(chromosomes[i]->dw[cur_dup].start<=chromosomes[i]->cw[j].start && chromosomes[i]->dw[cur_dup].end >= chromosomes[i]->cw[j].end){
 
 	if (type == DUPS){
-	  if(copy_num < 2.5){
+	  if(copy_num < 1.25 * PLOIDY){
 	    isNOK++;
 	  }
 	  else{
@@ -414,7 +414,7 @@ void filter_dw(int i, int cur_dup, int isAut, enum CALLTYPE type){
 	  }
 	}
 	else{
-	  if(copy_num > 1.5){
+	  if(copy_num > 0.75 * PLOIDY){
 	    isNOK++;
 	  }
 	  else{
@@ -488,12 +488,12 @@ void trim_sw(int i, int cur_dup, int isAut, enum CALLTYPE type){
   float cutoff, cutoff_x;
 
   if (type == DUPS){
-    cutoff = SW_MEAN + 4*SW_STD;
-    cutoff_x = SW_MEAN_X + 4*SW_STD_X;
+    cutoff = SW_MEAN + 2 * PLOIDY * SW_STD;
+    cutoff_x = SW_MEAN_X + 2 * PLOIDY * SW_STD_X;
   }
   else {
-    cutoff = SW_MEAN - 4*SW_STD;
-    cutoff_x = SW_MEAN_X - 4*SW_STD_X;
+    cutoff = SW_MEAN - 2 * PLOIDY * SW_STD;
+    cutoff_x = SW_MEAN_X - 2 * PLOIDY * SW_STD_X;
   }
 
 
@@ -756,7 +756,7 @@ void  print_copy_numbers(char *fname){
   for (i = 0; i < num_chrom; i++){
     for (j = 0; j < chromosomes[i]->cw_cnt; j++){
       if (isAutosome(chromosomes[i]->cw, j, i))
-	copy_num = (chromosomes[i]->cw[j].depth / CW_MEAN) * 2;
+	copy_num = (chromosomes[i]->cw[j].depth / CW_MEAN) * PLOIDY;
       else
 	copy_num = chromosomes[i]->cw[j].depth / CW_MEAN_X;
 
@@ -805,7 +805,7 @@ void read_gene(char *glist, char *out_prefix){
      
   out_fname = (char *) getMem(sizeof (char) * (strlen(out_prefix) + strlen(".genes.bed") + 2));
 
-  geneList = fopen(glist, "r");
+  geneList = my_fopen(glist, "r", 0);
      
   sprintf (out_fname, "%s.genes.bed", out_prefix);
   printf("Writing to : %s\n", out_fname);
@@ -855,7 +855,7 @@ void read_gene(char *glist, char *out_prefix){
       //Find the interleaving CW's of gene list
       for (j = 0; j < chromosomes[i]->cw_cnt; j++){
 	if (isAutosome(chromosomes[i]->cw, j, i)){
-	  copy_num = (chromosomes[i]->cw[j].depth / CW_MEAN) * 2;
+	  copy_num = (chromosomes[i]->cw[j].depth / CW_MEAN) * PLOIDY;
 	  if(chromosomes[i]->cw[j].start >= start && chromosomes[i]->cw[j].end <= end){
 	    copy_n[cur]=copy_num;
 	    cur++;

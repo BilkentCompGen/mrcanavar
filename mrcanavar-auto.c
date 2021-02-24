@@ -21,12 +21,14 @@ int mem;
 int uncompressed; 
 int nosam; 
 int kmerlen; 
+int ploidy;
 
 void print_help(void){ 
   fprintf(stderr, "Usage:\n\n"); 
   fprintf(stderr, "mrcanavar-auto\n\t--input [list]: comma-separated FASTQ(.gz) files.\n\t--aln-input [list]: comma-separated BAM/CRAM files (alternative to --input).\n\t--ref [ref.fa]: repeat masked reference genome. mrsFAST index (ref.fa.index) should be in the same directory.\n"); 
   fprintf(stderr, "\t--conf [ref.cnvr]: mrCaNaVaR config file.\n\t--gene [genes.bed]: List of genes.\n\t--threads [int]: number of threads for mrsFAST.\n"); 
   fprintf(stderr, "\t--kmer [int]: Cropping length for mrsFAST mapping. Default is 36.\n"); 
+  fprintf(stderr, "\t--ploidy [int]: Ploidy value for the organism. Default is 2.\n"); 
   fprintf(stderr, "\t--skip-mapping: Skip mrsFAST mapping. Use this only if you have the mapping output and rerunning mrCaNaVaR for some reason.\n"); 
   fprintf(stderr, "\t--cloud: Cloud mode, the directory info from the input file names will be stripped for output file generation.\n"); 
   fprintf(stderr, "\t--no-gz: Do not compress mrsFAST output. This option will generate larger files, but it will save some run time.\n"); 
@@ -43,12 +45,14 @@ int parse_command_line( int argc, char** argv)
 
   
   ref_genome = NULL;  input_files = NULL;  cnvr_conf = NULL;  gene_list = NULL; bam_input = NULL; unmasked_ref_genome = NULL; 
+  ploidy = 2;
   
   static struct option long_options[] = 
     { 
       {"input" , required_argument, 0, 'i'}, 
       {"aln-input" , required_argument, 0, 'a'}, 
       {"ref" , required_argument, 0, 'f'}, 
+      {"ploidy" , required_argument, 0, 'p'}, 
       {"unmasked-ref" , required_argument, 0, 'u'}, 
       {"conf" , required_argument, 0, 'c'}, 
       {"gene" , required_argument, 0, 'g'},     
@@ -69,7 +73,7 @@ int parse_command_line( int argc, char** argv)
       return -1; 
     } 
   
-  while( ( o = getopt_long( argc, argv, "i:a:f:u:c:g:m:k:t", long_options, &index)) != -1) 
+  while( ( o = getopt_long( argc, argv, "i:a:f:p:u:c:g:m:k:t", long_options, &index)) != -1) 
     { 
       switch( o) 
 	{ 
@@ -96,6 +100,9 @@ int parse_command_line( int argc, char** argv)
 	  break; 
 	case 'm': 
           mem = atoi(optarg); 
+	  break; 
+	case 'p': 
+          ploidy = atoi(optarg); 
 	  break; 
 	case 'k': 
           kmerlen = atoi(optarg); 
@@ -124,7 +131,11 @@ int parse_command_line( int argc, char** argv)
     fprintf (stderr, "Config file (CNVR) is missing.\n"); 
     return -1; 
   } 
-
+  if (ploidy <= 0){
+    fprintf (stderr, "Ploidy number should be greater than or equal to 1.\n"); 
+    return -1; 
+  }
+  
   if (do_cloud) 
     strcpy(is_cloud, "--cloud"); 
   
@@ -343,7 +354,7 @@ int main (int argc, char **argv){
   
   /* call */
 
-  sprintf(cmd_line, "mrcanavar --call -conf %s -depth %s.depth -gene %s -o %s-out", cnvr_conf, out_file, gene_list, out_file);
+  sprintf(cmd_line, "mrcanavar --call -conf %s -depth %s.depth -ploidy %d -gene %s -o %s-out", cnvr_conf, out_file, ploidy, gene_list, out_file);
   fprintf(stderr, "[CALL COPY NUMBERS] %s\n", cmd_line);
   if (!dry_run)
     ret = system(cmd_line);

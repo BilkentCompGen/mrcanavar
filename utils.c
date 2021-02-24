@@ -73,6 +73,8 @@ void init_globals(void){
   CUT_WINDOW  = 6;
 
   MIN_DUP = 10000;
+
+  PLOIDY = 2;
 }
 
 
@@ -387,6 +389,9 @@ int isAutosome(struct window *win, int win_id, int chrom_id){
   if (GENDER == FEMALE)
     return 1;
 
+  if (PLOIDY == 1)
+    return 1;
+  
   if (win != NULL)
     if (isPseudo(win[win_id], chrom_id))
       return 1;

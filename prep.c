@@ -146,7 +146,9 @@ int count_chrom(FILE *fasta, int *max_len){
   *max_len = maxlength;
 
   if (VERBOSE && retStr == NULL)
-    fprintf(stderr, "There was potentially an error in fgets during count_chrom.\n");  return cnt;
+    fprintf(stderr, "There was potentially an error in fgets during count_chrom.\n");
+
+  return cnt;
 }
 
 

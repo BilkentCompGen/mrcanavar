@@ -6,8 +6,8 @@
 #define MAX_STR 256
 #define GC_BIN  1000
 
-#define VERSION "1.2.3"
-#define LAST_UPDATE "March 18, 2019"
+#define VERSION "1.3"
+#define LAST_UPDATE "February 24, 2021"
 
 
 enum MODETYPE {NONE, PREP, READSAM, CALL, CONC};
@@ -50,6 +50,7 @@ int SW_SIZE;
 int CW_SIZE;
 int LW_SLIDE;
 int SW_SLIDE;
+int PLOIDY;
 
 float LW_MEAN;
 float LW_STD;

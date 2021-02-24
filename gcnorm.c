@@ -180,7 +180,7 @@ int norm_until_converges (enum WINDOWTYPE wt, float *gclookup, float *gclookup_x
       break;
 
     //  } while (max >= maxcut || max_x >= maxcut_x || min <= mincut || min_x <= mincut_x);  
-  } while (stdev > 0.25 * mean);
+  } while (stdev > 0.25 * mean * (0.5 * PLOIDY));
 
 
   fprintf(stdout, "%s Normalization completed.\n",  (wt == LW ? "LW" : (wt == SW ? "SW" : "CW")));

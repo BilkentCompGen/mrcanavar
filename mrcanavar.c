@@ -142,6 +142,8 @@ int main(int argc, char **argv){
       MIN_DUP = atoi(argv[i+1]);
     else if (!strcmp(argv[i], "-gene"))
       set_str(&gene, argv[i+1]);
+    else if (!strcmp(argv[i], "-ploidy"))
+      PLOIDY = atoi(argv[i+1]);
 
 
     /* generic stuff */
