@@ -27,6 +27,7 @@ int mincnv;
 void print_help(void){ 
   fprintf(stderr, "Usage:\n\n"); 
   fprintf(stderr, "mrcanavar-auto\n\t--input [list]: comma-separated FASTQ(.gz) files.\n\t--aln-input [list]: comma-separated BAM/CRAM files (alternative to --input).\n\t--ref [ref.fa]: repeat masked reference genome. mrsFAST index (ref.fa.index) should be in the same directory.\n"); 
+  fprintf(stderr, "\t--unmasked-ref [unmaskedref.fasta]: Ogirinal unmasked reference  genome. This is required if --aln-input is used for BAM/CRAM files.\n"); 
   fprintf(stderr, "\t--conf [ref.cnvr]: mrCaNaVaR config file.\n\t--gene [genes.bed]: List of genes.\n\t--threads [int]: number of threads for mrsFAST.\n"); 
   fprintf(stderr, "\t--kmer [int]: Cropping length for mrsFAST mapping. Default is 36.\n"); 
   fprintf(stderr, "\t--ploidy [int]: Ploidy value for the organism. Default is 2.\n"); 

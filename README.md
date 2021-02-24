@@ -190,13 +190,17 @@ mrcanavar-auto is a wrapper for mrsFAST and mrCaNaVaR. It assumes that both mrsF
 
 Full parameter list:
 	
+
 	--input [list]: comma-separated FASTQ(.gz) files.
 	--aln-input [list]: comma-separated BAM/CRAM files (alternative to --input).
 	--ref [ref.fa]: repeat masked reference genome. mrsFAST index (ref.fa.index) should be in the same directory.
+	--unmasked-ref [unmaskedref.fasta]: Ogirinal unmasked reference  genome. This is required if --aln-input is used for BAM/CRAM files.
 	--conf [ref.cnvr]: mrCaNaVaR config file.
 	--gene [genes.bed]: List of genes.
 	--threads [int]: number of threads for mrsFAST.
 	--kmer [int]: Cropping length for mrsFAST mapping. Default is 36.
+	--ploidy [int]: Ploidy value for the organism. Default is 2.
+	--mincnv [int]: Minimum length for CNVs to call. Default is 10000.
 	--skip-mapping: Skip mrsFAST mapping. Use this only if you have the mapping output and rerunning mrCaNaVaR for some reason.
 	--cloud: Cloud mode, the directory info from the input file names will be stripped for output file generation.
 	--no-gz: Do not compress mrsFAST output. This option will generate larger files, but it will save some run time.
